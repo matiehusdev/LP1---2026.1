@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include "TAD_VARTREE/TAD_VARTREE.h"
+#include "TAD_VARTREE\TAD_VARTREE.c"
 
 int main(){
     /*Cria nós como folhas*/
@@ -23,5 +22,7 @@ int main(){
     arvv_insere(a,g);
     arvv_insere(a,f);
     arvv_insere(a,b);
+
+    arvv_imprime(a);
     return 0;
 }

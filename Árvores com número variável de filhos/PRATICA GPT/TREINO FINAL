@@ -1,0 +1,55 @@
+Plano final de treino (objetivo: fechar o assunto)
+🔹 Treino 1 — Grau (mais uma vez, mas com regra)
+
+Sem escrever código, responda apenas:
+
+1. Quantos filhos tem esse nó?
+    R: para descobrir tenho que percorrer a partir de prim e seguir em prox do nó atual até chegar em NULL,
+    incrementando ao longo do caminho.
+
+2. Qual o maior grau entre meus filhos?
+    R: o nó que tiver mais filhos é o maior grau.
+
+3. Qual dos dois eu retorno?
+    R: por que é escolhido o de MAIOR grau,
+    independente de onde esteja na árvore, seja o pai ou qualquer outro nó.
+
+Se travar em alguma, ainda não codifique.
+
+🔹 Treino 2 — Altura (versão com for)
+
+Explique em texto, em 3 frases, sem usar palavras “recursão” ou “for”.
+    R: começa pelo caso base, crio uma variável x com valor -1 e, para cada filho, uma variavel temporaria y
+    que vai receber a chamada da própria função (terá a altura da árvore em um ramo), depois verifico se y>x
+    caso sim, x recebe y, isso até a árvore ser nula. no final retorna o valor de x + 1, 1 pq conta a raiz.
+
+    Resposta esperada: A altura mede o maior caminho entre o nó atual e uma folha.
+    Para isso, analisamos cada filho e guardamos o maior valor encontrado entre eles.
+    No final, somamos um para contabilizar o nível do nó atual.
+
+Se conseguir, a função sai sozinha.
+
+🔹 Treino 3 — Função nova (não vista no livro)
+
+Conta quantos nós têm exatamente 2 filhos.
+
+Se você conseguir pensar o algoritmo, mesmo que erre o código, você fechou árvore genérica.
+
+int arvv_doisf(Arvvar* a){
+    if(a == NULL)
+        return 0;
+
+    int cont = 0;
+
+    int irmaos = 0;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        irmaos++;
+
+    if(irmaos == 2)
+        cont = 1;
+
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_doisf(Arvvar* a);
+
+    return cont;
+}

@@ -52,3 +52,44 @@ int arvv_altura(Arvvar* a){
     else
         return max2(1 + arvv_altura(a->prim), arvv_altura(a->prox));
 }
+
+int arvv_nos(Arvvar* a){
+    if(a == NULL)
+        return 0;
+    
+    int cont = 1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_nos(p);
+    return cont;
+}
+int arvv_folhas(Arvvar* a){
+    if(a == NULL)
+        return 0;
+
+    int cont = 0;
+    if(a->prim == NULL)
+        cont = 1;
+    else
+        for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+            cont += arvv_folhas(p);
+    return cont;
+}
+int arvv_grau(Arvvar* a){
+    if(a == NULL)
+        return 0;
+
+    int max = 0;
+    for(Arvvar* p = a; p != NULL; p = p->prox){
+        int grau = 0;
+        for(Arvvar* f = p->prim; f != NULL; f = f->prox)
+            grau++;
+
+        if(grau > max)
+            max = grau;
+
+        int gfilhos = arvv_grau(p->prim);
+        if(gfilhos > max)
+            max = gfilhos;
+    }
+    return max;
+}

@@ -1,0 +1,194 @@
+FASE 1 — Reset conceitual (30–40 min)
+🔹Exercício 1 — 3 perguntas que você deve responder sem código
+
+Responda em texto, como se estivesse explicando para alguém:
+
+1. O que significa percorrer uma árvore genérica?
+    R: passar pelos nós partindo da raiz passando pelo primeiro filho (prim)
+    e também por seus irmãos (prox) e continuar para as subárvores.
+
+    Ajuste: é visitar o nó atual e, em seguida, percorrer recursivamente  
+    todas as subárvores encadeadas a partir de prim e prox.
+
+2. Quando eu devo:
+- usar a->prim
+    R: Quando quero acessar o primeiro filho e desde nível.
+    Ajuste: entrada de listas dos filhos.
+
+- usar a->prox
+    R: Quando quero acessar outros ramos de um mesmo nível.
+    Ajuste: próximo filho do mesmo pai.
+
+3. O que acontece se eu esquecer de testar a == NULL?
+    R: pode causar segmentation fault caso a árvore seja vazia.
+
+Exercício 2 — Regra única (grave isso)
+
+Escreva em um papel e deixe visível:
+
+“Toda função em árvore genérica tem:
+1. Caso base (a == NULL)
+2. Processamento do nó atual
+3. Percurso dos filhos via prim e prox”
+
+Essa frase resolve 90% dos erros.
+
+🔹Função 1 — Existe nó? (pertence)
+
+Sem pensar em folhas, grau, altura.
+
+Pergunta mental:
+
+“Esse nó ou algum dos seus filhos tem o valor X?”
+
+Pseudocódigo mental:
+/*  se árvore vazia → falso
+    se info == x → verdadeiro
+    para cada filho:
+        se pertence(filho) → verdadeiro
+    retorne falso
+*/
+
+int arvv_pertence(Arvvar* a, char c){
+    if(a == NULL)
+        return 0;
+
+    if(a->info == c)
+        return 1;
+
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        if(arvv_pertence(p, c))
+            return 1;
+    return 0;
+}
+
+🔹Função 2 — Contar nós (nos)
+
+Pergunta mental:
+
+“Quantos nós existem abaixo de mim?”
+
+Pseudocódigo mental:
+/*  se árvore vazia → 0
+    conta = 1
+    para cada filho:
+        conta += nós(filho)
+    retorne conta
+*/
+
+int arvv_nos(Arvvar* a){
+    if(a == NULL)
+        return 0;
+    int cont = 1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_nos(p);
+    return cont;
+}
+
+🔹Função 3 — Folhas (folhas)
+
+Pergunta mental:
+
+“Eu sou folha?”
+
+Pseudocódigo mental:
+/*  se árvore vazia → 0
+    se não tem filhos → 1
+    soma folhas dos filhos
+*/
+
+int arvv_folhas(Arvvar* a){
+    if(a == NULL)
+        return 0;
+    int cont = 0;
+    if(a->prim == NULL)
+        cont = 1;
+    else
+        for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+            cont += arvv_folhas(p);
+
+    return cont;
+}
+
+🔹Função 4 — Altura (apenas a versão com for)
+
+Pergunta mental:
+
+“Qual o maior caminho até uma folha?”
+
+Pseudocódigo mental:
+/*  se árvore vazia → -1
+    hmax = -1
+    para cada filho:
+        h = altura(filho)
+        se h > hmax → hmax = h
+    retorne hmax + 1
+*/
+
+int arvv_altura(Arvvar* a){
+    if(a == NULL)
+        return -1;
+    int hmax = -1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox){
+        int max = arvv_altura(p->prim);
+
+        if(max > hmax)
+            hmax = max;
+    }
+    return hmax + 1;
+}
+
+🔹FASE 3 — Escrita guiada sem IA (45–60 min)
+
+Agora vem a parte crítica.
+
+Regra de ouro
+
+❌ Não peça código
+✔️ Só peça correção
+
+1. Faça o seguinte ciclo:
+2. Escolha uma função
+3. Escreva sozinho, mesmo errando
+4. Só então me envie
+
+Eu corrijo sem reescrever, apenas apontando erros
+
+    R: Escolhi para saber qual o maior grau:
+int arvv_grau(Arvvar* a){
+    if(a == NULL)
+        return 0;
+    
+    int grau = 0;
+    for(Arvvar* p = a; p != NULL; p = p->prox){
+        while(p != NULL){
+            grau++;
+            p = p->prox;
+        }
+
+        int gfilhos = arvv_grau(p->prim);
+
+        if(gfilhos > grau)
+            grau = gfilhos;
+    }
+    return grau;
+}
+
+🔹FASE 4 — Consolidação (30 min)
+
+Sem código, responda:
+1. Por que toda função começa com if(a == NULL)?
+    R: Caso o nó seja vazio ele já parar e não precisar gastar mais tempo executando algo
+    que nao irá servir e também evitar segment default.
+
+2. Por que percorremos filhos com for(p = a->prim; ...)?
+    R: Por que os filhos estão encadeados, se comportando semelhante a uma lista.
+
+3. Em que função prox influencia diretamente o resultado?
+    R: a função de altura.
+
+4. Por que altura é diferente de número de nós?
+    R: por que altura é o maior caminho da raiz até uma folha, a quantidade de nós
+    inclui todos os nós, independente de ser o maior caminho ou não.
+
+Se alguma resposta não sair fácil, volte uma fase.

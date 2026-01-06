@@ -1,0 +1,161 @@
+🔹BLOCO 5 — Funções clássicas (1h)
+
+int arvv_nos(Arvvar* a){
+    if(a == NULL)
+        return 0;
+    
+    int cont = 1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_nos(p);
+    return cont;
+}
+int arvv_folhas(Arvvar* a){
+    if(a == NULL)
+        return 0;
+
+    int cont = 0;
+    if(a->prim == NULL)
+        cont = 1;
+    else
+        for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+            cont += arvv_folhas(p);
+    return cont;
+}
+int arvv_pertence(Arvvar* a, char c){
+    if(a->info == c)
+        return 1;
+    else
+        for(Arvvar* p = a->prim;p != NULL; p = p->prox)
+            if(arvv_pertence(p, c))
+                return 1;
+    return 0;
+}
+int arvv_grau(Arvvar* a){
+    if(a == NULL)
+        return 0;
+
+    int max = 0;
+    for(Arvvar* p = a; p != NULL; p = p->prox){
+        int grau = 0;
+        for(Arvvar* f = p->prim; f != NULL; f = f->prox)
+            grau++;
+
+        if(grau > max)
+            max = grau;
+
+        int gfilhos = arvv_grau(p->prim);
+        if(gfilhos > max)
+            max = gfilhos;
+    }
+    return max;
+}
+
+🔹BLOCO 6 — Leitura de código (nível prova) (30 min)
+
+Analise e responda:
+
+int f(Arv* a){
+    if(a == NULL) return 0;
+    return f(a->prim) + f(a->prox) + 1;
+}
+
+
+Perguntas:
+
+1. O que essa função calcula?
+    R: conta a quantidade de nós
+
+2. Por que soma prim e prox?
+    R: por que conta todos os nós, independente se é folha ou não
+
+3. Qual o valor retornado para árvore vazia?
+    R: 0
+
+🔹BLOCO 7 — Erros clássicos (30 min)
+
+Explique por que está errado:
+
+return 1 + max(arv_altura(a->prim),
+               arv_altura(a->prox));
+
+    R: esta errado por que a altura sempre será 1 por esta fora da funcao max
+
+E também:
+
+if(a == NULL) return 0;
+    R: não esta errado
+
+🔹BLOCO 8 — Mini-simulado final (30 min)
+
+Sem consultar nada:
+
+1. Escreva o TAD completo
+Arvvar* arvv_cria(char c){
+    Arvvar* p = (Arvvar*)malloc(sizeof(Arvvar));
+    p->info = c;
+    p->prim = NULL;
+    p->prox = NULL;
+    return p;
+}
+void arvv_insere(Arvvar* a, Arvvar* sa){
+    sa->prox = a->prim;
+    a->prim = sa;
+}
+void arvv_imprime(Arvvar* a){
+    if(a != NULL){
+        printf("<%c\n", a->info);
+        for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+            arvv_imprime(p);
+        printf(">");
+    }
+}
+int arvv_pertence(Arvvar* a, char c){
+    if(a->info == c)
+        return 1;
+    else
+        for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+            if(arvv_pertence(p))
+                return 1;
+    return 0;
+}
+void arvv_libera(Arvvar* a){
+    Arvvar* p = a->prim;
+    while(p != NULL){
+        Arvvar* t = p->prox;
+        arvv_libera(p);
+        p = t;
+    }
+    free(a);
+}
+int arvv_altura(Arvvar* a){
+    if(a == NULL)
+        return -1;
+    int max = 0;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox){
+        int alt = arvv_altura(p->prim);
+        if(alt > max)
+            max = alt;
+    }
+
+    return max + 1;
+}
+
+2. Implemente altura
+static max2(int a, int b){
+    return (a > b) ? a : b;
+}
+
+int arvv_altura(Arvvar* a){
+    if(a == NULL)
+        return -1;
+    else
+        return max2(1 + arvv_altura(a->prim), arvv_altura(a->prox));
+}
+
+3. Explique filho–irmão em 5 linhas
+    R: filho é o campo prim de um nó, irmão é o campo prox de um nó.
+    cada nó pode terno máximo um filho mas pode ter n irmãos.
+
+4. Diga qual a diferença para árvore binária
+    R: a diferença é que a árvore binária pode ter 0, 1 ou 2 filhos e sempre
+    estão na esquerda ou na direita do nó.

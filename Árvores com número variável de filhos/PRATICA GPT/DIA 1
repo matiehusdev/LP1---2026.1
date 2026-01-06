@@ -1,0 +1,101 @@
+DIA 1 — Fundamentos + leitura profunda de código
+
+🔹Exercício 2 — Verdadeiro ou falso (explique mentalmente)
+
+( V ) Um nó pode ter vários filhos, mas apenas um prim
+    R: Sim, cada prim aponta para o primeiro filho, prox são os irmãos encadeados de prim
+
+( F ) Um irmão aumenta a altura da árvore
+    R: Não, um irmão está no mesmo nível do prim
+
+( F ) prox representa um nível abaixo
+    R: Não, representa um irmão que está no mesmo nivel
+
+( V ) Árvore genérica pode ser vista como binária
+    R: Pode, prim representa um filho à esquerda (sae) e prox representa o irmão à direita (sad)
+
+🔹BLOCO 2 — Reescrita do TAD do livro (45 min)
+Arv* arv_cria(int info){
+    Arv* a = (Arv*)malloc(sizeof(Arv));
+    a->info = info;
+    a->prim = NULL;
+    a->prox = NULL;
+    return a;
+}
+
+void arv_insere(Arv* pai, Arv* filho){
+    filho->prox = pai->prim;
+    pai->prim = filho;
+}
+
+void arv_imprime(Arv* a){
+    if(a != NULL){ //Precisa verificar se a árvore é vazia
+        Arv* p;
+        printf("<%d\n", a->info);
+        for(p = a->prim; p != NULL; p = p->prox)
+            arv_imprime(p);
+        printf(">");
+    }
+}
+
+void arv_libera(Arv* a){
+    Arv* p = a->prim;
+    while(p != NULL){
+        Arv* t = p->prox;
+        arv_libera(p);
+        p = t;
+    }
+    free(a);
+}
+
+🔹BLOCO 3 — Altura (as duas versões) (45 min)
+
+int arv_altura(Arv* a){
+    int hmax = -1;
+    Arv* p;
+
+    for(p = a->prim; p != NULL; p = p->prox){
+        int h = arv_altura(p);
+        if(h > hmax)
+            hmax = h;
+    }    
+    return hmax + 1;
+}
+“Por que começa em -1?”
+    R: Começa em -1 por que caso a arvore não tenha filhos o retorno seja 1+(-1)=0, que é a altura de uma folha
+
+//versão sem for
+static max2(int a, int b){
+    return (a > b) ? a : b;
+}
+int arv_altura(Arv* a){
+    if(a == NULL) //não conferir "a->prim == NULL" e sim "a == NULL"
+        return -1;
+    else
+        return max2(1 + arv_altura(a->prim), arv_altura(a->prox));
+}
+
+O que representa o +1
+    R: representa caso prim seja nulo vai retornar 0 (1 + (-1))
+
+Por que o irmão não soma
+    R: por que ele está comparando com o irmão, não precisa somar nos dois
+
+Por que NULL retorna -1
+    R: para causar o 1 + (-1) e retornar 0
+
+🔹BLOCO 4 — Autoteste rapido (30 min)
+Responda sem código:
+
+Qual a altura de uma árvore com um único nó? 
+    R: 0, uma folha não tem altura
+
+Qual a diferença entre:
+altura do nó
+    R: altura do nó é o maior caminho da raiz até uma folha
+
+número de nós
+    R: são a quantidade de nós que existem na árvore, independente de ter filho ou não
+
+Em qual situação arv_altura(a->prox) é maior que 1 + arv_altura(a->prim)?
+    R: quando o irmão possuir filhos e o prim não possuir
