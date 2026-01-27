@@ -1,0 +1,139 @@
+AULA SAIDEIRA — ÁRVORE COM NÚMERO VARIÁVEL DE FILHOS
+BLOCO 1 — O modelo mental definitivo (isso resolve tudo)
+Estrutura
+struct arv {
+    char info;
+    struct arv* prim;  // primeiro filho
+    struct arv* prox;  // próximo irmão
+};
+
+Tradução mental (grave isso)
+
+- prim abre uma lista
+- prox continua essa lista
+- Essa lista são os filhos do nó
+
+📌 Nunca existe “lista de irmãos da raiz”.
+📌 Toda lista começa em a->prim.
+
+BLOCO 2 — As 3 perguntas que TODA função responde
+
+Antes de qualquer código, responda mentalmente:
+
+1. O que acontece se a árvore for vazia?
+    R: retorna 0 ou não avança na função.
+
+2. O nó atual contribui com o resultado? Como?
+    R: sim, ele é essencial para percorrer diferentes ramos da árvore.
+
+3. O que faço com os filhos?
+    R: o mesmo processo, verificar se possui filhos e etc.
+
+Se você não responder as 3, não escreva código.
+
+BLOCO 3 — 4 funções clássicas (padrão único)
+🔹 Contar nós
+int arvv_nos(Arvvar* a){
+    if(a == NULL) return 0;
+
+    int cont = 1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_nos(p);
+
+    return cont;
+}
+
+
+Leitura em português:
+
+Eu conto este nó e somo todos os nós dos meus filhos.
+
+🔹 Folhas
+int arvv_folhas(Arvvar* a){
+    if(a == NULL) return 0;
+
+    if(a->prim == NULL)
+        return 1;
+
+    int cont = 0;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        cont += arvv_folhas(p);
+
+    return cont;
+}
+
+
+Regra:
+
+Folha = não tem filhos (prim == NULL).
+
+🔹 Altura (com for)
+int arvv_altura(Arvvar* a){
+    if(a == NULL) return -1;
+
+    int hmax = -1;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox){
+        int h = arvv_altura(p);
+        if(h > hmax)
+            hmax = h;
+    }
+    return hmax + 1;
+}
+
+
+Tradução:
+
+Pego o maior caminho entre meus filhos e somo meu nível.
+
+🔹 Grau
+int arvv_grau(Arvvar* a){
+    if(a == NULL) return 0;
+
+    int filhos = 0;
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox)
+        filhos++;
+
+    int max = filhos;
+
+    for(Arvvar* p = a->prim; p != NULL; p = p->prox){
+        int g = arvv_grau(p);
+        if(g > max)
+            max = g;
+    }
+
+    return max;
+}
+
+
+Regra:
+
+Grau da árvore = maior número de filhos de qualquer nó.
+
+BLOCO 4 — Os 5 erros que você NÃO vai mais cometer
+
+❌ Percorrer filhos começando em a
+✔️ Sempre começar em a->prim
+
+❌ Usar irmãos para decidir grau
+✔️ Grau depende só de filhos diretos
+
+❌ Esquecer de processar o nó atual
+✔️ Sempre decidir se ele contribui
+
+❌ Misturar decisão local com resultado global
+✔️ Primeiro decide o nó, depois soma subárvores
+
+❌ Achar que raiz tem irmãos
+✔️ Raiz nunca tem prox
+
+BLOCO FINAL — Teste relâmpago (se você responder, fechou)
+
+Responda mentalmente:
+
+“Se eu apagar TODAS as subárvores, o que sobra da função?”
+
+Se a resposta for:
+
+o processamento do nó atual
+
+Então você entendeu árvore genérica.

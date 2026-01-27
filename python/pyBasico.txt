@@ -1,0 +1,4 @@
+Curso Python 
+Aula Prática 
+Testando [a] para continuar escrevendo 
+Testando novamente [a] 
