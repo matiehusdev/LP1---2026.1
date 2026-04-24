@@ -17,6 +17,7 @@
     void lstgen_libera(ListaGen* l);
     ListaGen* lstgen_filtra(ListaGen* l, int (*criterio)(void*));
     ListaGen* lstgen_ordena(ListaGen* l, int (*compara)(void*, void*));
+    ListaGen* lstgen_conc(ListaGen* l1, ListaGen* l2);
     int lstgen_grava_csv(ListaGen* l, char* nome_arquivo_csv, char* (*cria_linha_csv)(void*));
     ListaGen* lstgen_carrega_csv(char* nome_arquivo_csv, void* (*cria_elemento)(char* linha_csv));
 

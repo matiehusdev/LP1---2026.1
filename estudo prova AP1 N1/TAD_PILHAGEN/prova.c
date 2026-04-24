@@ -106,4 +106,30 @@ int pilhas_iguais(PilhaGen* p1, PilhaGen* p2, int (*compara)(void*, void*)){
     return 1;
 }
 
-void lstgen_limpa_selecionados(ListaGen** l, int (*criterio)(void*), void (*libera_info)(void*));
+void lstgen_limpa_selecionados(ListaGen** l, int (*criterio)(void*), void (*libera_info)(void*)){
+    if(l == NULL || *l == NULL) return;
+
+    ListaGen* p = *l;
+    ListaGen* ant = NULL;
+
+    while(p != NULL){
+        if(criterio(p->info)){
+            ListaGen* aux = p->prox;
+
+            if(ant == NULL)
+                *l = aux;
+            else
+                ant->prox = aux;
+            
+            if(libera_info != NULL)
+                libera_info(p->info);
+
+            free(p);
+            p = aux;
+        }
+        else{
+            ant = p;
+            p = p->prox;
+        }
+    }
+}

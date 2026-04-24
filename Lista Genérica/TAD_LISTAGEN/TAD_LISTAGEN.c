@@ -80,6 +80,16 @@ ListaGen* lstgen_filtra(ListaGen* l, int (*criterio)(void*)){
     }
     return filt;
 }
+ListaGen* lstgen_conc(ListaGen* l1, ListaGen* l2){
+    if(l1 == NULL) return l2;
+
+    ListaGen* p = l1;
+    while(p->prox != NULL)
+        p = p->prox;
+
+    p->prox = l2;
+    return l1;
+}
 ListaGen* lstgen_ordena(ListaGen* l, int (*compara)(void*, void*));
 int lstgen_grava_csv(ListaGen* l, char* nome_arquivo_csv, char* (*cria_linha_csv)(void*));
 ListaGen* lstgen_carrega_csv(char* nome_arquivo_csv, void* (*cria_elemento)(char* linha_csv));

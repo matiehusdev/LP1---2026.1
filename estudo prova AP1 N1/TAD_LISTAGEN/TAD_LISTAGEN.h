@@ -10,6 +10,7 @@
     ListaGen* lstgen_cria();
     int lstgen_vazia(ListaGen* l);
     ListaGen* lstgen_insere(ListaGen* l, void* elemento);
+    ListaGen* lstgen_inserefinal(ListaGen* l, void* elemento);
     void lstgen_percorre(ListaGen* l, void (*processa)(void*));
     void* lstgen_busca(ListaGen* l, int (*compara)(void*, void*), void* dado);
     ListaGen* lstgen_retira(ListaGen* l,  int (*compara)(void*, void*), void* dado);

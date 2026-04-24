@@ -1,0 +1,4 @@
+Estrutura de Dados em C
+Waldemar Celes
+Capitulo 9 - Arquivos
+fgetc e fputc sao funcoes de leitura e escrita por caractere
