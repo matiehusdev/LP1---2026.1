@@ -8,6 +8,7 @@
         char nome[81];
         char tel[13];
         char email[51];
+        float nota;
         struct aluno* prox; 
     } Aluno;
     
@@ -76,4 +77,21 @@
     // Importar tabela de arquivo binário e retornar nova tabela
     Aluno** hsh_importa_binario(char* filename);
 
+    int hsh_tamanho_bucket(Aluno** tab, int indice);
+
+    int hsh_maior_colisao(Aluno** tab);
+
+    Aluno* hsh_insere_final(Aluno** tab, int mat, char* nome, char* tel, char* email);
+    
+    Aluno* hsh_clone(Aluno** tab, int tam);
+    
+    // Buscar alunos cujo nome contém o prefixo e salvar em arquivo texto
+    int hsh_exporta_prefixo(Aluno** tab, char* prefixo, char* filename);
+    
+    // Buscar alunos com nota acima da média e salvar em arquivo texto
+    int hsh_exporta_acima_media(Aluno** tab, char* filename);
+    
+    // Mesclar dois arquivos texto de alunos em um terceiro, sem duplicatas por matrícula
+    int hsh_mesclar_arquivos(char* filename1, char* filename2, char* filename_saida);
+    
 #endif

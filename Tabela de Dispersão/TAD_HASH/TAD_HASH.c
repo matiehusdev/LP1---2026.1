@@ -294,9 +294,218 @@ void hsh_imprime_estatisticas(Aluno** tab) {
 
 Aluno** hsh_filtrar(Aluno** tab, int (*criterio)(Aluno*));
 
-void hsh_ordenar_lista(Aluno** tab, int (*comparar)(Aluno*, Aluno*));
+void hsh_ordenar_lista(Aluno** tab, int (*comparar)(Aluno*, Aluno*)) {
+    for(int i = 0; i < N; i++){
+
+        int trocou;
+        do{
+            trocou = 0;
+            Aluno* atual = tab[i];
+            while(atual != NULL && atual->prox != NULL){
+                if(comparar(atual, atual->prox) > 0){ // se for maior que zero, b -> a | a-> b
+                    int mat = atual->mat;
+                    char nome[81], tel[13], email[39];
+                    strcpy(nome, atual->nome);
+                    strcpy(tel, atual->tel);
+                    strcpy(email, atual->email);
+
+                    atual->mat = atual->prox->mat;
+                    strcpy(atual->nome, atual->prox->nome);
+                    strcpy(atual->tel, atual->prox->tel);
+                    strcpy(atual->email, atual->prox->email);
+
+                    atual->prox->mat = mat;
+                    strcpy(atual->prox->nome, nome);
+                    strcpy(atual->prox->tel, tel);
+                    strcpy(atual->prox->email, email);
+                    trocou = 1;
+                }
+            }
+        } while(trocou != 0);
+    }
+}
 
 int hsh_exporta_binario(Aluno** tab, char* filename);
 
 Aluno** hsh_importa_binario(char* filename);
 
+int hsh_tamanho_bucket(Aluno** tab, int indice) {
+    Aluno* atual = tab[indice];
+
+    int count = 0;
+    while(atual != NULL){
+        count++;
+        atual = atual->prox;
+    }
+
+    return count;
+}
+
+int hsh_maior_colisao(Aluno** tab) {
+    int maior = 0;
+
+    for(int i = 0; i < N; i++){
+        Aluno* atual = tab[i];
+        int aux = 0;
+        while(atual != NULL){
+            aux++;
+            atual = atual->prox;
+        }
+        if(aux > maior)
+            maior = aux;
+    }
+    
+    return maior;
+}
+
+
+Aluno* hsh_insere_final(Aluno** tab, int mat, char* nome, char* tel, char* email) {
+    int h = hash(mat);
+    Aluno* atual = tab[h];
+    Aluno* ultimo = NULL;
+    while(atual != NULL){
+        if(atual->mat == mat){
+            strcpy(atual->nome, nome);
+            strcpy(atual->tel, tel);
+            strcpy(atual->email, email);
+            return atual;
+        }
+        ultimo = atual;
+        atual = atual->prox;
+    }
+    
+    Aluno* novo = (Aluno*)malloc(sizeof(Aluno));
+    if(!novo) exit(1);
+    
+    novo->mat = mat;
+    strcpy(novo->nome, nome);
+    strcpy(novo->tel, tel);
+    strcpy(novo->email, email);
+    novo->prox = NULL;
+    
+    if(ultimo == NULL)
+    tab[h] = novo;
+    else
+    ultimo->prox = novo;
+    
+    return atual;
+}
+
+Aluno* hsh_clone_aux(Aluno** tab, int tam, int mat, char* nome, char* tel, char* email) {
+    int h = mat % tam;
+    Aluno* atual = tab[h];
+
+    while(atual != NULL){
+        if(atual->mat == mat){
+            strcpy(atual->nome, nome);
+            strcpy(atual->tel, tel);
+            strcpy(atual->email, email);
+            return atual;
+        }
+        atual = atual->prox;
+    }
+
+    Aluno* novo = (Aluno*)malloc(sizeof(Aluno));
+    if(!novo) exit(1);
+
+    novo->mat = mat;
+    strcpy(novo->nome, nome);
+    strcpy(novo->tel, tel);
+    strcpy(novo->email, email);    
+
+    novo->prox = tab[h];
+    tab[h] = novo;
+
+    return novo;
+}
+
+Aluno* hsh_clone(Aluno** tab, int tam) {
+    Aluno** new_tab = calloc(tam, sizeof(Aluno*));
+
+    for(int i = 0; i < N; i++){
+        Aluno* atual = tab[i];
+        while(atual != NULL){
+            hsh_clone_aux(new_tab, tam, atual->mat, atual->nome, atual->tel, atual->email);
+            atual = atual->prox;
+        }
+    }
+    return new_tab;
+}
+
+int hsh_exporta_prefixo(Aluno** tab, char* prefixo, char* filename) {
+    FILE* fp = fopen(filename, "w");
+    if(!fp) return 0;
+
+    for(int i = 0; i < N; i++){
+        Aluno* atual = tab[i];
+        while(atual != NULL){
+            if(strncmp(atual->nome, prefixo, strlen(prefixo)) == 0)
+                fprintf(fp, "%d,%s,%s,%s\n", atual->mat, atual->nome, atual->tel, atual->email);
+            atual = atual->prox;
+        }
+    }
+
+    fclose(fp);
+
+    return 1;
+}
+
+float hsh_calcula_media(Aluno** tab) {
+    float sum = 0.0;
+    float count = 0;
+
+    for(int i = 0; i < N; i++){
+        Aluno* atual = tab[i];
+        while(atual != NULL){
+            count++;
+            sum += atual->nota;
+            atual = atual->prox;
+        }
+    }
+
+    if(count == 0) return 0.0;
+    return sum / count;
+}
+
+int hsh_exporta_acima_media(Aluno** tab, char* filename) {
+    FILE* fp = fopen(filename, "w");
+    if(!fp) return 0;
+
+    float media = hsh_calcula_media(tab);
+
+    for(int i = 0; i < N; i++){
+        Aluno* atual = tab[i];
+        while(atual != NULL){
+            if(atual->nota > media)
+                fprintf(fp, "%d,%s,%.2f\n", atual->mat, atual->nome, atual->nota);
+            atual = atual->prox;
+        }
+    }
+    
+    fclose(fp);
+    return 1;
+}
+
+int hsh_mesclar_arquivos(char* filename1, char* filename2, char* filename_saida) {
+    FILE* f_saida = fopen(filename_saida, "w");
+    FILE* f1 = fopen(filename1, "r");
+    if(!f1 || !f_saida) return 0;
+
+    int mat;
+    char nome[81];
+    char tel[13];
+    char email[51];
+    int mat_vistas[N];
+
+    for(int i = 0; fscanf(f1, "%d,%s,%s,%s", &mat, nome, tel, email) == 4; i++){
+        fprintf(f_saida, "%d,%s,%s,%s\n", mat, nome, tel, email);
+        mat_vistas[i] = mat;
+    }
+
+    fclose(f1);
+
+
+    fclose(f2);
+    fclose(f_saida);
+    return 1;
+}
