@@ -15,7 +15,7 @@
     Aluno* TABELA[N];
 
     // 1. Calcula o hash de uma chave primária
-    static int hash(int mat);
+    // static int hash(int mat);
     
     // 2. Busca um aluno por matrícula e retorna o ponteiro para a estrutura, caso exista.
     Aluno* hsh_busca(Aluno** tab, int mat);

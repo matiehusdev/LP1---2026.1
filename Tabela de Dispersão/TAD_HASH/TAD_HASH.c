@@ -276,7 +276,35 @@ void hsh_imprime_estatisticas(Aluno** tab) {
             total_alunos++;
             atual = atual->prox;
         }
-        
+                    Aluno* atual = tab[i];
+            while(atual != NULL && atual->prox != NULL){
+                if(comparar(atual, atual->prox) > 0){ // se for maior que zero, b -> a | a-> b
+                    int mat = atual->mat;
+                    char nome[81], tel[13], email[39];
+                    strcpy(nome, atual->nome);
+                    strcpy(tel, atual->tel);
+                    strcpy(email, atual->email);
+
+                    atual->mat = atual->prox->mat;
+                    strcpy(atual->nome, atual->prox->nome);
+                    strcpy(atual->tel, atual->prox->tel);
+                    strcpy(atual->email, atual->prox->email);
+
+                    atual->prox->mat = mat;
+                    strcpy(atual->prox->nome, nome);
+                    strcpy(atual->prox->tel, tel);
+                    strcpy(atual->prox->email, email);
+                    trocou = 1;
+                }
+            }
+        } while(trocou != 0);
+    }
+}
+
+int hsh_exporta_binario(Aluno** tab, char* filename);
+
+Aluno** hsh_importa_binario(char* filename);
+
         if(aux > maior_lista)
             maior_lista = aux;
     }
@@ -367,7 +395,35 @@ Aluno* hsh_insere_final(Aluno** tab, int mat, char* nome, char* tel, char* email
         if(atual->mat == mat){
             strcpy(atual->nome, nome);
             strcpy(atual->tel, tel);
-            strcpy(atual->email, email);
+            strcpy(atual->email, email);            Aluno* atual = tab[i];
+            while(atual != NULL && atual->prox != NULL){
+                if(comparar(atual, atual->prox) > 0){ // se for maior que zero, b -> a | a-> b
+                    int mat = atual->mat;
+                    char nome[81], tel[13], email[39];
+                    strcpy(nome, atual->nome);
+                    strcpy(tel, atual->tel);
+                    strcpy(email, atual->email);
+
+                    atual->mat = atual->prox->mat;
+                    strcpy(atual->nome, atual->prox->nome);
+                    strcpy(atual->tel, atual->prox->tel);
+                    strcpy(atual->email, atual->prox->email);
+
+                    atual->prox->mat = mat;
+                    strcpy(atual->prox->nome, nome);
+                    strcpy(atual->prox->tel, tel);
+                    strcpy(atual->prox->email, email);
+                    trocou = 1;
+                }
+            }
+        } while(trocou != 0);
+    }
+}
+
+int hsh_exporta_binario(Aluno** tab, char* filename);
+
+Aluno** hsh_importa_binario(char* filename);
+
             return atual;
         }
         ultimo = atual;
@@ -488,6 +544,8 @@ int hsh_exporta_acima_media(Aluno** tab, char* filename) {
 
 int hsh_mesclar_arquivos(char* filename1, char* filename2, char* filename_saida) {
     FILE* f_saida = fopen(filename_saida, "w");
+
+    // ler o primeiro arquivo, insere os elementos na tabela e no hash de matriculas
     FILE* f1 = fopen(filename1, "r");
     if(!f1 || !f_saida) return 0;
 
@@ -497,14 +555,27 @@ int hsh_mesclar_arquivos(char* filename1, char* filename2, char* filename_saida)
     char email[51];
     int mat_vistas[N];
 
-    for(int i = 0; fscanf(f1, "%d,%s,%s,%s", &mat, nome, tel, email) == 4; i++){
+    while(fscanf(f1, "%d,%[^,],%[^,],%s", &mat, nome, tel, email) == 4){
         fprintf(f_saida, "%d,%s,%s,%s\n", mat, nome, tel, email);
-        mat_vistas[i] = mat;
+        mat_vistas[mat ] = mat;
     }
-
     fclose(f1);
 
-
+    // ler o segundo arquivo, verifica se a matricula já está na tabela
+    // se não estiver adiciona a tabela e ao hash de matriculas
+    FILE* f2 = fopen(filename2, "r");
+    if(!f2){
+        fclose(f_saida);
+        return 0;
+    }
+    int existe = 0;
+    for(int i = 0; fscanf(f2, "%d,%[^,],%[^,],%s", &mat, nome, tel, email) == 4; i++){
+        int h = mat % N;
+        if(mat_vistas[h] == mat){
+            existe = 1;
+            break;
+        }
+    }
     fclose(f2);
     fclose(f_saida);
     return 1;
